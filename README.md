@@ -1,6 +1,6 @@
 # Saung Hninn Phyu – Portfolio
 
-A one-page personal portfolio built with plain **HTML, CSS and vanilla JavaScript**: no frameworks, libraries, build step or backend. It introduces me, lists the skills I'm using and learning, shows my projects with category filters, and gives visitors ways to get in touch.
+A one-page personal portfolio built with plain **HTML, CSS and vanilla JavaScript**: no frameworks, libraries, build step or backend of my own. It introduces me, lists the skills I'm using and learning, shows my projects with category filters, and lets visitors message me through a working contact form.
 
 Built for the Let's Tech Club Fullstack Development portfolio project.
 
@@ -28,8 +28,8 @@ No installation is needed.
 | `index.html` | Page content and semantic structure |
 | `css/style.css` | All styles, light/dark theme tokens and responsive rules |
 | `js/theme-init.js` | Tiny script in `<head>` that applies the saved theme before the page paints (prevents a light flash on reload) |
-| `js/main.js` | Project data, card rendering, filtering, mobile menu, theme toggle and form validation |
-| `assets/` | Images, logos, certificate images and my CV |
+| `js/main.js` | Project data, card rendering, filtering, mobile menu, theme toggle, form validation and sending |
+| `assets/` | Images, logos, certificate images and my CV (`SaungHninnPhyu-CV.pdf`) |
 | `screenshots/` | Desktop and mobile screenshots for submission |
 
 ## Features
@@ -43,11 +43,17 @@ Header with navigation · Hero · About · Skills (with "Learning" badges) · Pr
 - Closed links use `display: none`, so they are out of the keyboard tab order.
 - If JavaScript is off, the links simply stay visible.
 
-### 2. Contact form validation
+### 2. Contact form validation and sending
 - Name of at least 2 characters, a valid email format, and a message of 20 to 500 characters, all checked **after trimming spaces**.
 - Each invalid field shows an error beside it (icon + text + red border, so it isn't colour alone) and `aria-invalid`. Focus moves to the first invalid field.
 - Errors clear as soon as a field becomes valid, entered values are kept, and a live counter shows message length.
-- A valid form does **not** send anything. It shows the status message "Demo only. Your message has not been sent." without reloading. The email link is the real way to contact me.
+- Only a fully valid form is sent. It's posted with `fetch()` to [Web3Forms](https://web3forms.com/), which emails it to me, so the page never reloads and no backend of my own is needed.
+- While sending, the button shows "Sending..." and is disabled to prevent double submissions. The result appears in an accessible status message under the form:
+  - **Success:** "Thanks! Your message has been sent." The form then clears and the counter resets.
+  - **Failure:** an error message pointing to my email address, with the visitor's text kept.
+- The Web3Forms `access_key` is a hidden field in the form. It's designed to be public: it only lets the form deliver messages to my inbox.
+
+> **Coursework note:** the brief asks for a demo-only form that never contacts a server. The submitted version did that, showing "Demo only. Your message has not been sent." Sending was added afterwards on the `feature/contact-form` branch.
 
 ### 3. Project cards and category filters
 - Projects are stored in the `projects` array of objects in `js/main.js` (title, description, category, technologies, demo and/or source URL).
@@ -72,16 +78,26 @@ Semantic landmarks (`header`, `nav`, `main`, `section`, `footer`), one `h1` with
 | Navigation | All section links work; mobile menu opens, closes, and closes after choosing a link |
 | Keyboard | Tab order: skip link, logo, menu, links (only when open), theme toggle, then page content; Enter opens the menu |
 | Invalid form | Empty, 1-character name, `bad@x` email, 9-character and 501-character messages are rejected with focus on the first invalid field |
-| Valid form | Shows the demo-only message, no reload, values kept |
+| Valid form | Sends name, email, message and access key to Web3Forms with no reload, shows the thank-you message, then clears the form (checked with a simulated response) |
+| Failed send | Shows the error message with my email address and keeps what the visitor typed (checked with a simulated failure) |
+| CV link | "Download my CV" downloads `assets/SaungHninnPhyu-CV.pdf` |
 | Filters | All 7 → Web Apps 3 → AI Apps 2 → Machine Learning 2 → All 7, with repeated switching and no duplicates |
 | Theme | Dark persists after reload; light persists after reload; works with storage blocked |
 | Links and console | All 18 external links return 200; no console errors |
 
 **Project data test:** add a temporary object to the `projects` array in `js/main.js` and reload. A new card appears, and its category's count updates. Remove it afterwards.
 
+## Git workflow
+
+- Commits were made at each milestone: HTML structure, styles, the menu/theme/form JavaScript, project cards and filters, and the README.
+- Project cards and filters were built on `feature/project-filters`, reviewed and merged into `main` through [pull request #1](https://github.com/saunghp/FullStack-Portfolio/pull/1).
+- The working contact form is on `feature/contact-form`.
+
 ## Known limitations
 
-- The contact form is a frontend demo only and never sends messages.
+- The contact form depends on Web3Forms. The free plan allows 250 messages a month, and if the service is down the form asks visitors to email me directly.
+- If you replace the CV, keep the filename `SaungHninnPhyu-CV.pdf` (or update the link in `index.html`), or the download link breaks.
+
 - Project screenshots are static images captured from each live demo, so they may not match the latest version of those sites.
 - Two machine-learning projects have no live demo, so they link to their source code only.
 - Fonts come from Google Fonts; offline, the page falls back to the system font.
@@ -93,3 +109,4 @@ Semantic landmarks (`header`, `nav`, `main`, `section`, `footer`), one `h1` with
 - Font: [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans) (SIL Open Font License) via Google Fonts.
 - Icons are simple inline SVGs drawn for this site.
 - Project screenshots were captured once with [Microlink](https://microlink.io/) and saved locally.
+- Contact form delivery by [Web3Forms](https://web3forms.com/).
