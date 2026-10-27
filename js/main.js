@@ -176,11 +176,14 @@ function initContactForm() {
     });
   });
 
-  form.addEventListener('submit', function (event) {
-    // Never navigate or reload: this form is a frontend demo only
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  form.addEventListener('submit', async function (event) {
+    // Never navigate or reload; the message is sent with fetch instead
     event.preventDefault();
     status.classList.remove('is-error');
 
+    // Validate first, so only complete messages are sent
     let firstInvalidField = null;
     fieldNames.forEach(function (name) {
       const field = form.elements[name];
@@ -196,8 +199,32 @@ function initContactForm() {
       return;
     }
 
-    // Entered values are kept, so the visitor can copy them into an email
-    status.textContent = 'Demo only. Your message has not been sent.';
+    // The Web3Forms access_key is a hidden field in the form, so FormData includes it
+    const originalText = submitButton.textContent;
+    submitButton.textContent = 'Sending...';
+    submitButton.disabled = true;
+    status.textContent = '';
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: new FormData(form)
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message);
+      }
+
+      status.textContent = 'Thanks! Your message has been sent. I usually reply within a day.';
+      form.reset();
+      updateCharCount();
+    } catch (error) {
+      status.classList.add('is-error');
+      status.textContent = 'Sorry, your message could not be sent. Please email me at saunghpdev@gmail.com instead.';
+    } finally {
+      submitButton.textContent = originalText;
+      submitButton.disabled = false;
+    }
   });
 
   updateCharCount();
