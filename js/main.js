@@ -204,10 +204,217 @@ function initContactForm() {
 }
 
 /* ==========================================================================
+   4. Project data, cards and category filters
+   ========================================================================== */
+
+// Single source of truth for the projects section. Add an object here and a
+// card (and, for a new category, a filter button) appears without editing HTML.
+const projects = [
+  {
+    title: 'Swee - Smart Task Allocation',
+    description: 'AI-powered workforce management that matches the right worker to the right job using availability, proximity, workload and performance.',
+    category: 'Web Apps',
+    technologies: ['Next.js 14', 'Supabase', 'Tailwind CSS', 'OpenAI', 'Azure OpenAI', 'Vercel'],
+    demoUrl: 'https://taskallocate.vercel.app/',
+    sourceUrl: 'https://github.com/saunghp/Swee---Task-Allocation',
+    image: 'assets/projects/swee.jpg',
+    imageAlt: 'Screenshot of the Swee task allocation app'
+  },
+  {
+    title: 'Emochi - AI Emotional Wellness Platform',
+    description: 'An 8-agent AI wellness platform where specialised characters debate, support and help you make sense of how you feel.',
+    category: 'AI Apps',
+    award: 'Community Choice & Best Use of Microsoft Stack',
+    technologies: ['Next.js', 'Azure AI Foundry', 'Prisma / SQL Server', 'Auth.js'],
+    demoUrl: 'https://emochiverse.vercel.app/',
+    sourceUrl: 'https://github.com/saunghp/emochi',
+    image: 'assets/projects/emochi.jpg',
+    imageAlt: 'Screenshot of the Emochi sign-in screen with a sleepy Emochi character'
+  },
+  {
+    title: 'Hope Spring - Online Fundraising System',
+    description: 'A multi-role fundraising platform where donees discover causes and fundraisers manage campaigns end to end. Built as a team using Agile Scrum.',
+    category: 'Web Apps',
+    technologies: ['TypeScript', 'React', 'Supabase', 'GitHub', 'Agile Scrum'],
+    demoUrl: 'https://hope-spring-si.vercel.app/',
+    sourceUrl: 'https://github.com/saunghp/CSIT314-SIM2026Q2-ShibaInu',
+    image: 'assets/projects/hope-spring.jpg',
+    imageAlt: 'Screenshot of the Hope Spring fundraising home page'
+  },
+  {
+    title: 'Oops Too Slow - Reaction Game',
+    description: 'A hackathon reaction game that swaps the keyboard for hand gestures, with solo and team leaderboards.',
+    category: 'Web Apps',
+    technologies: ['JavaScript', 'HTML', 'CSS', 'MediaPipe', 'Firebase', 'Webcam API'],
+    demoUrl: 'https://nan2-28pm.vercel.app/',
+    sourceUrl: 'https://github.com/saunghp/oops-too-slow',
+    image: 'assets/projects/oops-too-slow.jpg',
+    imageAlt: 'Screenshot of the Oops Too Slow start screen asking for a nickname'
+  },
+  {
+    title: 'Customer Support Chatbot',
+    description: 'A support chatbot named Aria that replies in the customer\'s own language, looks up their orders and saves every chat.',
+    category: 'AI Apps',
+    technologies: ['React', 'Node.js', 'Express', 'Supabase', 'OpenRouter'],
+    demoUrl: 'https://customer-support-chatbot-kappa-virid.vercel.app/',
+    sourceUrl: 'https://github.com/saunghp/Customer-Support-Chatbot',
+    image: 'assets/projects/chatbot.jpg',
+    imageAlt: 'Screenshot of a conversation with the Aria support chatbot'
+  },
+  {
+    title: 'Machine Translation Across Six Directions',
+    description: 'Translation models I trained to translate between English and Korean, Vietnamese and Indonesian, comparing MarianMT, mBART-50 and NLLB-200.',
+    category: 'Machine Learning',
+    technologies: ['Python', 'PyTorch', 'Hugging Face', 'LoRA', 'Jupyter'],
+    sourceUrl: 'https://github.com/saunghp/Machine-Translation-Models-Across-Six-Translation-Directions',
+    facts: ['EN ⇄ KO', 'EN ⇄ VI', 'EN ⇄ ID', 'MarianMT', 'mBART-50', 'NLLB-200']
+  },
+  {
+    title: 'Drive a Taxi',
+    description: 'A Q-learning agent that learns to pick up and drop off passengers in Gymnasium\'s Taxi-v3 world, using exploration and rewards to find the shortest routes.',
+    category: 'Machine Learning',
+    technologies: ['Python', 'Gymnasium', 'NumPy', 'Matplotlib', 'tqdm'],
+    sourceUrl: 'https://github.com/saunghp/csci323-drive-a-taxi',
+    facts: ['30,000 training episodes', '500 states', '6 actions', '4 pick-up points']
+  }
+];
+
+const ALL_CATEGORIES = 'All';
+
+// Small helper so card-building code stays readable
+function createElement(tag, className, text) {
+  const element = document.createElement(tag);
+  if (className) element.className = className;
+  if (text) element.textContent = text;
+  return element;
+}
+
+function createProjectLink(url, label, projectTitle, isPrimary) {
+  const link = createElement('a', 'button ' + (isPrimary ? 'button-primary' : 'button-secondary'), label);
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  // Screen readers hear which project the link is for, e.g. "Live demo of Swee..."
+  link.setAttribute('aria-label', label + ' of ' + projectTitle + ' (opens in a new tab)');
+  return link;
+}
+
+function createProjectCard(project) {
+  const card = createElement('article', 'card project-card');
+
+  // Top: screenshot, or a panel of key facts for projects without a UI
+  if (project.image) {
+    const media = createElement('div', 'project-media');
+    const image = document.createElement('img');
+    image.src = project.image;
+    image.alt = project.imageAlt;
+    image.width = 800;
+    image.height = 500;
+    image.loading = 'lazy';
+    media.append(image);
+    card.append(media);
+  } else if (project.facts) {
+    const factList = createElement('ul', 'project-media project-media-facts');
+    factList.setAttribute('aria-label', 'Key facts');
+    project.facts.forEach(function (fact) {
+      factList.append(createElement('li', '', fact));
+    });
+    card.append(factList);
+  }
+
+  const body = createElement('div', 'project-body');
+
+  const meta = createElement('p', 'project-meta');
+  meta.append(createElement('span', 'category-badge', project.category));
+  if (project.award) {
+    meta.append(createElement('span', 'award-badge', 'Award: ' + project.award));
+  }
+
+  const techList = createElement('ul', 'tech-list');
+  techList.setAttribute('aria-label', 'Technologies used');
+  project.technologies.forEach(function (tech) {
+    techList.append(createElement('li', '', tech));
+  });
+
+  const links = createElement('div', 'project-links');
+  if (project.demoUrl) {
+    links.append(createProjectLink(project.demoUrl, 'Live demo', project.title, true));
+  }
+  if (project.sourceUrl) {
+    links.append(createProjectLink(project.sourceUrl, 'Source code', project.title, !project.demoUrl));
+  }
+
+  body.append(
+    meta,
+    createElement('h3', '', project.title),
+    createElement('p', '', project.description),
+    techList,
+    links
+  );
+  card.append(body);
+  return card;
+}
+
+function initProjects() {
+  const grid = document.getElementById('project-grid');
+  const filterBar = document.getElementById('project-filters');
+  const resultsCount = document.getElementById('results-count');
+  if (!grid || !filterBar || !resultsCount) return;
+
+  // Unique categories, in the order they first appear in the data
+  const categories = [ALL_CATEGORIES].concat(
+    projects
+      .map(function (project) { return project.category; })
+      .filter(function (category, index, list) { return list.indexOf(category) === index; })
+  );
+
+  function getProjectsIn(category) {
+    // filter() returns a new array, so the original projects array is never changed
+    if (category === ALL_CATEGORIES) return projects;
+    return projects.filter(function (project) { return project.category === category; });
+  }
+
+  function showCategory(category) {
+    const visibleProjects = getProjectsIn(category);
+
+    // replaceChildren() removes the old cards first, so switching filters never duplicates cards
+    grid.replaceChildren.apply(grid, visibleProjects.map(createProjectCard));
+
+    filterBar.querySelectorAll('.filter-button').forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.dataset.category === category));
+    });
+
+    const noun = visibleProjects.length === 1 ? 'project' : 'projects';
+    resultsCount.textContent = category === ALL_CATEGORIES
+      ? 'Showing all ' + visibleProjects.length + ' ' + noun
+      : 'Showing ' + visibleProjects.length + ' ' + noun + ' in ' + category;
+  }
+
+  // Build one real <button> per category; aria-pressed exposes the selected one
+  categories.forEach(function (category) {
+    const button = createElement('button', 'filter-button', category);
+    button.type = 'button';
+    button.dataset.category = category;
+    button.setAttribute('aria-pressed', 'false');
+
+    const count = createElement('span', 'filter-count', '(' + getProjectsIn(category).length + ')');
+    button.append(' ', count);
+
+    button.addEventListener('click', function () {
+      showCategory(category);
+    });
+    filterBar.append(button);
+  });
+
+  showCategory(ALL_CATEGORIES);
+}
+
+/* ==========================================================================
    Start everything
    ========================================================================== */
 initMobileMenu();
 initThemeToggle();
 initContactForm();
+initProjects();
 
 document.getElementById('year').textContent = new Date().getFullYear();
