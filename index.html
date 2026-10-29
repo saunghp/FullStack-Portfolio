@@ -9,7 +9,17 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Fonts: only the weights the page uses. The links load as "preload" and become stylesheets once
+       fetched, so they never block the first paint. The script font only needs the letters of "Hello, I'm". -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap&text=Hello%2C%20I%27m" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap&text=Hello%2C%20I%27m">
+  </noscript>
+
+  <!-- The hero picture is the largest thing on the page: start fetching it straight away -->
+  <link rel="preload" as="image" href="assets/images/saung.webp" type="image/webp" fetchpriority="high">
 
   <link rel="stylesheet" href="css/style.css">
   <!-- Applies the saved theme before the page paints, so dark mode does not flash light on reload -->
@@ -17,125 +27,213 @@
   <script src="js/main.js" defer></script>
 </head>
 <body>
+  <!-- Icon sprite: every icon on the page is drawn from these symbols with <use href="#i-name"> -->
+  <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 7l8.5 6 8.5-6"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></symbol>
+    <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" stroke="none" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c3 2 9 2 12 0v-5M22 10v6"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6M14 4l-4 16"/></symbol>
+    <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-8M12 13c0-4 3-6 7-6 0 4-3 6-7 6zM12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></symbol>
+    <symbol id="i-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+    <symbol id="i-react" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></symbol>
+    <symbol id="i-triangle" viewBox="0 0 24 24"><path d="M12 3L22 20H2z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.4-.7L3 21l1.8-5A8.4 8.4 0 1 1 21 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+    <symbol id="i-certificate" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+    <symbol id="i-coffee" viewBox="0 0 24 24"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9zM17 10h1.5a2.5 2.5 0 0 1 0 5H17M8 3v2M12 3v2"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+    <symbol id="i-cooking" viewBox="0 0 24 24"><path d="M7 14a4 4 0 1 1 1.6-7.7A4 4 0 0 1 15.4 6.3 4 4 0 1 1 17 14M7 14v6h10v-6M7 17.5h10"/></symbol>
+    <symbol id="i-explore" viewBox="0 0 24 24"><path d="M21 3L3 10.5l6.5 2.5L12 20l2-6.5L21 3z"/><path d="M9.5 13l4-4"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.4c2.2.6 3.5 2.4 3.5 5.6"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12l7-7M16 5h3v3"/></symbol>
+  </svg>
+
   <a class="skip-link" href="#main">Skip to main content</a>
 
   <header class="site-header">
-    <div class="container header-inner">
-      <a class="logo" href="#home" aria-label="Saung, back to top">Saung<span class="logo-dot" aria-hidden="true">.</span></a>
+    <div class="nav-shell page-w">
+      <div class="nav-pill glass">
+        <a class="logo" href="#home" aria-label="Saung, back to top">Saung<span class="logo-dot" aria-hidden="true">.</span></a>
 
-      <!-- DOM order (menu button, links, theme) matches the visual order, so Tab moves left to right -->
-      <button class="icon-button menu-toggle" type="button" id="menu-toggle" aria-expanded="false" aria-controls="primary-nav">
-        <svg class="icon icon-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-        <svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        <span class="visually-hidden">Menu</span>
-      </button>
+        <!-- DOM order (menu button, links, theme, CTA) matches the visual order, so Tab moves in a sensible sequence -->
+        <button class="icon-button menu-toggle" type="button" id="menu-toggle" aria-expanded="false" aria-controls="primary-nav">
+          <span class="menu-lines" aria-hidden="true"><span></span><span></span></span>
+          <span class="visually-hidden">Menu</span>
+        </button>
 
-      <nav class="primary-nav" id="primary-nav" aria-label="Main">
-        <ul class="nav-list">
-          <li><a href="#about">About</a></li>
-          <li><a href="#skills">Skills</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#journey">Journey</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
+        <nav class="primary-nav" id="primary-nav" aria-label="Main">
+          <ul class="nav-list">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#journey">Journey</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="nav-mobile-cta"><a class="button button-primary" href="mailto:saunghpdev@gmail.com">Say hello</a></li>
+          </ul>
+        </nav>
 
-      <button class="icon-button theme-toggle" type="button" id="theme-toggle" aria-pressed="false">
-        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-        <span class="visually-hidden">Dark theme</span>
-      </button>
+        <button class="icon-button theme-toggle" type="button" id="theme-toggle" aria-pressed="false">
+          <svg class="icon icon-moon" aria-hidden="true" focusable="false"><use href="#i-moon"/></svg>
+          <svg class="icon icon-sun" aria-hidden="true" focusable="false"><use href="#i-sun"/></svg>
+          <span class="visually-hidden">Dark theme</span>
+        </button>
+
+        <a class="button button-primary nav-cta" href="mailto:saunghpdev@gmail.com">Say hello</a>
+      </div>
     </div>
   </header>
 
   <main id="main">
     <!-- Hero -->
     <section class="hero" id="home" aria-labelledby="hero-title">
-      <div class="container hero-inner">
+      <div class="page-w hero-card">
         <div class="hero-text">
-          <p class="eyebrow">Hello, I'm</p>
-          <h1 id="hero-title">Saung Hninn Phyu</h1>
+          <p class="hero-hello"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-heart"/></svg><span>Hello, I'm</span></p>
+          <h1 class="hero-name" id="hero-title">Saung<span class="hero-dot" aria-hidden="true"></span><span class="visually-hidden"> Hninn Phyu</span></h1>
           <p class="hero-role">Full-Stack / AI Developer</p>
           <p class="hero-lead">I build web applications and AI solutions that solve real-world problems. I'm always excited to learn and explore new technologies.</p>
           <div class="button-row">
-            <a class="button button-primary" href="#projects">View my work</a>
-            <a class="button button-secondary" href="#contact">Get in touch</a>
+            <a class="button button-primary" href="assets/SaungHninnPhyu-CV.pdf" download>
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-download"/></svg>
+              Download CV
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevron-right"/></svg>
+            </a>
+            <a class="button button-secondary" href="#projects">
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-eye"/></svg>
+              View my work
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevron-right"/></svg>
+            </a>
           </div>
           <p class="availability"><span class="status-dot" aria-hidden="true"></span>Open to internships &amp; junior roles</p>
         </div>
 
         <figure class="hero-figure">
-          <img src="assets/images/saung.png" width="560" height="727" alt="Illustration of Saung smiling while working on a laptop">
+          <picture>
+            <source srcset="assets/images/saung.webp" type="image/webp">
+            <img src="assets/images/saung.png" width="560" height="755" fetchpriority="high" decoding="async" alt="Illustration of Saung smiling while working on a laptop">
+          </picture>
+          <!-- <ul class="hero-chips" aria-hidden="true">
+            <li class="chip chip-1"><svg class="icon" focusable="false"><use href="#i-react"/></svg>React</li>
+            <li class="chip chip-2"><svg class="icon" focusable="false"><use href="#i-triangle"/></svg>Next.js</li>
+            <li class="chip chip-3"><svg class="icon" focusable="false"><use href="#i-database"/></svg>Supabase</li>
+            <li class="chip chip-4"><svg class="icon" focusable="false"><use href="#i-cloud"/></svg>Azure OpenAI</li>
+          </ul> -->
         </figure>
-      </div>
-    </section>
 
-    <!-- About -->
-    <section class="section" id="about" aria-labelledby="about-title">
-      <div class="container">
-        <p class="section-kicker">About me</p>
-        <h2 class="section-title" id="about-title">A bit more about me</h2>
-
-        <div class="about-grid">
-          <div class="about-text">
-            <p>I'm a Computer Science student at the University of Wollongong in Singapore, majoring in Big Data and AI. Before that I completed a Diploma in Information Technology at the Singapore Institute of Management.</p>
-            <p>I love learning, building and creating. I enjoy turning ideas into something real and useful, from full-stack web apps to AI agents and machine-learning models, and I'm always glad to meet people who share similar interests.</p>
-            <p><strong>What I'm working towards:</strong> becoming a confident full-stack developer who can design, build and ship AI-powered products for real users. Right now I'm deepening my skills in testing, cloud AI services and writing clean, accessible frontend code.</p>
-
-            <h3 class="subheading">Outside of coding</h3>
-            <ul class="tag-list" aria-label="Hobbies">
-              <li class="tag">Coffee</li>
-              <li class="tag">Photography</li>
-              <li class="tag">Cooking</li>
-              <li class="tag">Exploring</li>
-            </ul>
-          </div>
-
-          <ul class="fact-list">
-            <li class="fact-card">
-              <h3>CS Graduate</h3>
-              <p>From Singapore</p>
-            </li>
-            <li class="fact-card">
-              <h3>Full-Stack &amp; AI</h3>
-              <p>Building for real users</p>
-            </li>
-            <li class="fact-card">
-              <h3>Always Learning</h3>
-              <p>Exploring new technologies</p>
-            </li>
-          </ul>
-        </div>
-
-        <h3 class="subheading">Why work with me</h3>
-        <ul class="value-grid">
-          <li class="card value-card">
-            <h4>Problem Solver</h4>
-            <p>I break complex problems down into simple, practical solutions.</p>
+        <ul class="hero-highlights">
+          <li>
+            <span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-cap"/></svg></span>
+            <div><p class="highlight-title">CS Graduate</p><p class="highlight-text">From Singapore</p></div>
           </li>
-          <li class="card value-card">
-            <h4>Curious &amp; Adaptable</h4>
-            <p>I enjoy picking up new frameworks, workflows and AI tools.</p>
+          <li>
+            <span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-code"/></svg></span>
+            <div><p class="highlight-title">Full-Stack &amp; AI</p><p class="highlight-text">Building for real users</p></div>
           </li>
-          <li class="card value-card">
-            <h4>People-Oriented</h4>
-            <p>I value clear communication, teamwork and building products that help real users.</p>
+          <li>
+            <span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-sprout"/></svg></span>
+            <div><p class="highlight-title">Always Learning</p><p class="highlight-text">Exploring new technologies</p></div>
           </li>
         </ul>
       </div>
     </section>
 
+    <!-- About -->
+    <section class="section about" id="about" aria-labelledby="about-title">
+      <div class="page-w">
+        <div class="about-grid">
+          <div class="about-text">
+            <div class="title-row">
+              <span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-user"/></svg></span>
+              <div>
+                <h2 class="small-title" id="about-title">A bit more about me</h2>
+                <span class="accent-bar" aria-hidden="true"></span>
+              </div>
+            </div>
+            <p>I'm a Computer Science graduate from the University of Wollongong, specializing in Big Data and AI, with a Diploma in Information Technology from SIM.</p>
+            <p><strong>What I'm working towards:</strong> Currently strengthening my skills in testing, cloud AI services, and building clean, accessible frontend applications.</p>
+          </div>
+
+          <div class="outside-card glass">
+            <h3 class="outside-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-heart"/></svg>Outside of coding</h3>
+            <ul class="outside-list">
+              <li><span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-coffee"/></svg></span>Coffee</li>
+              <li><span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-camera"/></svg></span>Photography</li>
+              <li><span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-cooking"/></svg></span>Cooking</li>
+              <li><span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-explore"/></svg></span>Exploring</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="why">
+          <p class="eyebrow">Why work with me</p>
+          <h3 class="why-title">A teammate who cares about impact<span class="why-dot">.</span></h3>
+          <ul class="why-grid">
+            <li class="glass glow-hover why-card">
+              <span class="tile tile-lg"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-people"/></svg></span>
+              <div>
+                <h4>Problem Solver</h4>
+                <p>I break complex problems down into simple, practical solutions.</p>
+              </div>
+            </li>
+            <li class="glass glow-hover why-card">
+              <span class="tile tile-lg"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-bulb"/></svg></span>
+              <div>
+                <h4>Curious &amp; Adaptable</h4>
+                <p>I enjoy picking up new frameworks, workflows and AI tools.</p>
+              </div>
+            </li>
+            <li class="glass glow-hover why-card">
+              <span class="tile tile-lg"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-target"/></svg></span>
+              <div>
+                <h4>People-Oriented</h4>
+                <p>I value clear communication, teamwork and building products that help real users.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider" aria-hidden="true"></div>
+
     <!-- Skills -->
-    <section class="section section-alt" id="skills" aria-labelledby="skills-title">
-      <div class="container">
-        <p class="section-kicker">My skills</p>
+    <section class="section skills" id="skills" aria-labelledby="skills-title">
+      <div class="page-w">
+        <p class="eyebrow">My skills</p>
         <h2 class="section-title" id="skills-title">Tools I work with</h2>
         <p class="section-intro">A practical toolkit across frontend, backend, data and applied AI. Skills marked <span class="learning-badge">Learning</span> are ones I'm still building confidence in.</p>
+        <span class="accent-bar" aria-hidden="true"></span>
 
         <div class="skills-grid">
-          <article class="card skill-group">
-            <h3><span class="skill-number" aria-hidden="true">01</span> Languages</h3>
-            <ul class="skill-list">
+          <article class="glass glow-hover skill-group">
+            <span class="skill-number" aria-hidden="true">01</span>
+            <div class="skill-head">
+              <span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-code"/></svg></span>
+              <h3>Languages</h3>
+            </div>
+            <ul class="chip-list">
               <li>Python</li>
               <li>JavaScript</li>
               <li>TypeScript</li>
@@ -144,17 +242,27 @@
               <li>CSS</li>
             </ul>
           </article>
-          <article class="card skill-group">
-            <h3><span class="skill-number" aria-hidden="true">02</span> Frameworks &amp; UI</h3>
-            <ul class="skill-list">
+
+          <article class="glass glow-hover skill-group">
+            <span class="skill-number" aria-hidden="true">02</span>
+            <div class="skill-head">
+              <span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-layers"/></svg></span>
+              <h3>Frameworks &amp; UI</h3>
+            </div>
+            <ul class="chip-list">
               <li>React</li>
               <li>Next.js</li>
               <li>Tailwind CSS</li>
             </ul>
           </article>
-          <article class="card skill-group">
-            <h3><span class="skill-number" aria-hidden="true">03</span> AI &amp; Cloud</h3>
-            <ul class="skill-list">
+
+          <article class="glass glow-hover skill-group">
+            <span class="skill-number" aria-hidden="true">03</span>
+            <div class="skill-head">
+              <span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-cloud"/></svg></span>
+              <h3>AI &amp; Cloud</h3>
+            </div>
+            <ul class="chip-list">
               <li>OpenAI</li>
               <li>Azure OpenAI</li>
               <li class="is-learning">Azure AI Foundry <span class="learning-badge">Learning</span></li>
@@ -162,9 +270,14 @@
               <li>Auth.js / Entra ID</li>
             </ul>
           </article>
-          <article class="card skill-group">
-            <h3><span class="skill-number" aria-hidden="true">04</span> Tools &amp; Databases</h3>
-            <ul class="skill-list">
+
+          <article class="glass glow-hover skill-group">
+            <span class="skill-number" aria-hidden="true">04</span>
+            <div class="skill-head">
+              <span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-database"/></svg></span>
+              <h3>Tools &amp; Databases</h3>
+            </div>
+            <ul class="chip-list">
               <li>Git</li>
               <li>GitHub</li>
               <li>Linux / Ubuntu</li>
@@ -174,18 +287,28 @@
               <li class="is-learning">Prisma <span class="learning-badge">Learning</span></li>
             </ul>
           </article>
-          <article class="card skill-group">
-            <h3><span class="skill-number" aria-hidden="true">05</span> Practices</h3>
-            <ul class="skill-list">
+
+          <article class="glass glow-hover skill-group">
+            <span class="skill-number" aria-hidden="true">05</span>
+            <div class="skill-head">
+              <span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-cog"/></svg></span>
+              <h3>Practices</h3>
+            </div>
+            <ul class="chip-list">
               <li>Agile Scrum</li>
               <li class="is-learning">CI/CD <span class="learning-badge">Learning</span></li>
               <li class="is-learning">Jest <span class="learning-badge">Learning</span></li>
               <li class="is-learning">Playwright <span class="learning-badge">Learning</span></li>
             </ul>
           </article>
-          <article class="card skill-group">
-            <h3><span class="skill-number" aria-hidden="true">06</span> Soft Skills</h3>
-            <ul class="skill-list">
+
+          <article class="glass glow-hover skill-group">
+            <span class="skill-number" aria-hidden="true">06</span>
+            <div class="skill-head">
+              <span class="tile"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-heart"/></svg></span>
+              <h3>Soft Skills</h3>
+            </div>
+            <ul class="chip-list">
               <li>Communication</li>
               <li>Teamwork</li>
               <li>Problem Solving</li>
@@ -196,11 +319,14 @@
     </section>
 
     <!-- Projects: cards and filter buttons are created by js/main.js from the projects array -->
-    <section class="section" id="projects" aria-labelledby="projects-title">
-      <div class="container">
-        <p class="section-kicker">My projects</p>
-        <h2 class="section-title" id="projects-title">Selected work</h2>
-        <p class="section-intro">Things I've actually built. Open the live site or browse the code.</p>
+    <section class="section band projects" id="projects" aria-labelledby="projects-title">
+      <svg class="wave wave-top" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0,70 C180,20 360,20 540,60 C760,110 980,100 1200,50 C1300,28 1380,30 1440,45 L1440,120 L0,120 Z"/></svg>
+      <svg class="wave wave-bottom" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0,0 L1440,0 L1440,60 C1260,110 1060,110 860,70 C660,30 460,20 260,60 C160,80 80,90 0,70 Z"/></svg>
+
+      <div class="page-w">
+        <p class="eyebrow">My projects</p>
+        <h2 class="section-title" id="projects-title">Things I've built</h2>
+        <!-- <p class="section-intro">Things I've actually built. Open the live site, browse the code, or read the details. Filter by category to narrow them down.</p> -->
 
         <div class="filter-bar" role="group" aria-label="Filter projects by category" id="project-filters"></div>
         <p class="results-count" id="results-count" aria-live="polite"></p>
@@ -209,147 +335,250 @@
           <noscript><p>Please enable JavaScript to see my projects, or visit <a href="https://github.com/saunghp">my GitHub profile</a>.</p></noscript>
         </div>
 
-        <p class="more-link"><a href="https://github.com/saunghp" target="_blank" rel="noopener">Explore more on GitHub<span class="visually-hidden"> (opens in a new tab)</span> <span aria-hidden="true">&rarr;</span></a></p>
+        <p class="more-link"><a class="button button-secondary" href="https://github.com/saunghp" target="_blank" rel="noopener">Explore more on GitHub<span class="visually-hidden"> (opens in a new tab)</span> <span aria-hidden="true">&rarr;</span></a></p>
       </div>
     </section>
 
     <!-- Journey -->
-    <section class="section section-alt" id="journey" aria-labelledby="journey-title">
-      <div class="container">
-        <p class="section-kicker">My journey</p>
+    <section class="section journey" id="journey" aria-labelledby="journey-title">
+      <div class="page-w">
+        <p class="eyebrow">My journey</p>
         <h2 class="section-title" id="journey-title">Learning &amp; growth</h2>
         <p class="section-intro">The academic background and learning experiences that shaped my interest in software development and AI.</p>
 
-        <div class="journey-grid">
+        <div class="group-head">
+          <span class="tile tile-round"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-cap"/></svg></span>
           <div>
-            <h3 class="subheading">Education</h3>
-            <ol class="timeline">
-              <li class="card timeline-item">
-                <img class="timeline-logo" src="assets/logos/uow.svg" width="48" height="48" alt="">
-                <div>
-                  <p class="timeline-date"><time datetime="2024-10">Oct 2024</time> &ndash; <time datetime="2026-09">Sep 2026</time></p>
-                  <h4>University of Wollongong, Singapore</h4>
-                  <p>Bachelor of Computer Science, major in Big Data and AI</p>
-                </div>
-              </li>
-              <li class="card timeline-item">
-                <img class="timeline-logo" src="assets/logos/sim.svg" width="48" height="48" alt="">
-                <div>
-                  <p class="timeline-date"><time datetime="2023-10">Oct 2023</time> &ndash; <time datetime="2024-09">Sep 2024</time></p>
-                  <h4>Singapore Institute of Management</h4>
-                  <p>Diploma in Information Technology, GPA 3.63 / 4.00</p>
-                </div>
-              </li>
-            </ol>
+            <h3>Education</h3>
+            <span class="accent-bar" aria-hidden="true"></span>
           </div>
+        </div>
+        <ol class="timeline">
+          <li class="timeline-item glass">
+            <p class="timeline-date"><time datetime="2024-10">Oct 2024</time><span class="date-to">to</span><time datetime="2026-09">Sep 2026</time></p>
+            <div class="timeline-body">
+              <div class="timeline-text">
+                <h4><a href="https://www.uow.edu.au/" target="_blank" rel="noopener">University of Wollongong, Singapore<span class="visually-hidden"> (opens in a new tab)</span></a></h4>
+                <p>Bachelor of Computer Science</p>
+                <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-database"/></svg>Major in Big Data and AI</p>
+                <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg>Singapore</p>
+              </div>
+              <a class="logo-plate" href="https://www.uow.edu.au/" target="_blank" rel="noopener" aria-label="Visit University of Wollongong (opens in a new tab)">
+                <img src="assets/logos/uow.svg" width="240" height="64" loading="lazy" alt="University of Wollongong Australia logo">
+              </a>
+            </div>
+          </li>
+          <li class="timeline-item glass">
+            <p class="timeline-date"><time datetime="2023-10">Oct 2023</time><span class="date-to">to</span><time datetime="2024-09">Sep 2024</time></p>
+            <div class="timeline-body">
+              <div class="timeline-text">
+                <h4><a href="https://www.sim.edu.sg/" target="_blank" rel="noopener">Singapore Institute of Management<span class="visually-hidden"> (opens in a new tab)</span></a></h4>
+                <p>Diploma in Information Technology</p>
+                <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chart"/></svg>GPA 3.63 / 4.00</p>
+                <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg>Singapore</p>
+              </div>
+              <a class="logo-plate" href="https://www.sim.edu.sg/" target="_blank" rel="noopener" aria-label="Visit Singapore Institute of Management (opens in a new tab)">
+                <img src="assets/logos/sim.svg" width="240" height="64" loading="lazy" alt="Singapore Institute of Management logo">
+              </a>
+            </div>
+          </li>
+        </ol>
 
+        <div class="group-head">
+          <span class="tile tile-round tile-mint"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-certificate"/></svg></span>
           <div>
-            <h3 class="subheading">Certificates &amp; awards</h3>
-            <ul class="cert-list">
-              <li class="cert-item">
-                <div>
-                  <h4>AWS Certified Cloud Practitioner</h4>
-                  <p>Issued 2026</p>
-                </div>
-                <a href="https://www.credly.com/badges/6928d7a9-5691-4a3b-9b79-2b6f2e46fc1c/public_url" target="_blank" rel="noopener">Show credential<span class="visually-hidden"> for AWS Certified Cloud Practitioner (opens in a new tab)</span></a>
-              </li>
-              <li class="cert-item">
-                <div>
-                  <h4>SIMITC Hackexperience 2026</h4>
-                  <p>Community Choice and Best Use of Microsoft Stack, 2026</p>
-                </div>
-                <a href="assets/certificates/community-choice-award.jpg" target="_blank" rel="noopener">View certificate<span class="visually-hidden"> for the Community Choice award (opens in a new tab)</span></a>
-              </li>
-              <li class="cert-item">
-                <div>
-                  <h4>AgentCamp 2026 &ndash; Global AI Singapore</h4>
-                  <p>Issued 2026</p>
-                </div>
-                <a href="https://globalai.community/badges/acba39b7-5387-48b1-b03c-44830bb2697e/" target="_blank" rel="noopener">Show credential<span class="visually-hidden"> for AgentCamp 2026 (opens in a new tab)</span></a>
-              </li>
-              <li class="cert-item">
-                <div>
-                  <h4>Learn Python for Data Science Skill Path</h4>
-                  <p>Issued 2026</p>
-                </div>
-                <a href="https://www.codecademy.com/profiles/text0325631589/certificates/ac83e31a3e114189849dd4ee714834eb" target="_blank" rel="noopener">Show credential<span class="visually-hidden"> for Learn Python for Data Science (opens in a new tab)</span></a>
-              </li>
-              <li class="cert-item">
-                <div>
-                  <h4>Learn HTML Course</h4>
-                  <p>Issued 2024</p>
-                </div>
-                <a href="https://www.codecademy.com/profiles/text0325631589/certificates/9eb0741e5ebef1f9f58a53bfac67d3a7" target="_blank" rel="noopener">Show credential<span class="visually-hidden"> for Learn HTML Course (opens in a new tab)</span></a>
-              </li>
-            </ul>
+            <h3>Certificates &amp; awards</h3>
+            <span class="accent-bar bar-mint" aria-hidden="true"></span>
           </div>
+        </div>
+        <ul class="cert-grid" id="cert-grid">
+          <li class="cert-card glass">
+            <div class="cert-pictures">
+              <button type="button" class="cert-picture" data-lightbox-title="AWS Certified Cloud Practitioner" aria-label="View AWS Certified Cloud Practitioner badge larger">
+                <img src="https://images.credly.com/images/00634f82-b07f-4bbd-a6bb-53de397fc3a6/linkedin_thumb_image.png" width="672" height="350" loading="lazy" alt="AWS Certified Cloud Practitioner badge">
+              </button>
+            </div>
+            <div class="cert-footer">
+              <div>
+                <h4>AWS Certified Cloud Practitioner</h4>
+                <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg>Issued 2026</p>
+              </div>
+              <a class="pill-link" href="https://www.credly.com/badges/6928d7a9-5691-4a3b-9b79-2b6f2e46fc1c/public_url" target="_blank" rel="noopener">Show credential<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-external"/></svg><span class="visually-hidden"> for AWS Certified Cloud Practitioner (opens in a new tab)</span></a>
+            </div>
+          </li>
+
+          <li class="cert-card glass">
+            <div class="cert-pictures cert-pictures-pair">
+              <button type="button" class="cert-picture" data-lightbox-title="SIMITC Hackexperience 2026" data-full="assets/certificates/community-choice-award.jpg" aria-label="View the Community Choice award certificate larger">
+                <img src="assets/certificates/community-choice-award-thumb.webp" width="640" height="452" loading="lazy" decoding="async" alt="Certificate of Excellence for the Community Choice Award at SIMITC Hackexperience 2026">
+              </button>
+              <button type="button" class="cert-picture" data-lightbox-title="SIMITC Hackexperience 2026" data-full="assets/certificates/microsoft-stack-award.jpg" aria-label="View the Best Use of Microsoft Stack certificate larger">
+                <img src="assets/certificates/microsoft-stack-award-thumb.webp" width="640" height="452" loading="lazy" decoding="async" alt="Certificate of Excellence for Best Use of Microsoft Stack at SIMITC Hackexperience 2026">
+              </button>
+            </div>
+            <div class="cert-footer">
+              <div>
+                <h4>SIMITC Hackexperience 2026</h4>
+                <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg>Awarded 2026</p>
+              </div>
+              <button type="button" class="pill-link" data-open-certificate>View certificates</button>
+            </div>
+          </li>
+
+          <li class="cert-card glass">
+            <div class="cert-pictures">
+              <button type="button" class="cert-picture" data-lightbox-title="AgentCamp 2026 - Global AI Singapore" data-full="https://globalai.community/img/badge/shared/20816dad92dfeda067d8f3cd6f216942100cde77391a52773187c9e2a404f2b8.png?w=1920&amp;h=1080&amp;mode=pad" aria-label="View the AgentCamp 2026 badge larger">
+                <img src="https://globalai.community/img/badge/shared/20816dad92dfeda067d8f3cd6f216942100cde77391a52773187c9e2a404f2b8.png?w=640&amp;h=360&amp;mode=pad" width="640" height="360" loading="lazy" decoding="async" alt="AgentCamp 2026 attendee badge from the Global AI Community">
+              </button>
+            </div>
+            <div class="cert-footer">
+              <div>
+                <h4>AgentCamp 2026 - Global AI Singapore</h4>
+                <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg>Issued 2026</p>
+              </div>
+              <a class="pill-link" href="https://globalai.community/badges/acba39b7-5387-48b1-b03c-44830bb2697e/" target="_blank" rel="noopener">Show credential<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-external"/></svg><span class="visually-hidden"> for AgentCamp 2026 (opens in a new tab)</span></a>
+            </div>
+          </li>
+
+          <li class="cert-card glass">
+            <div class="cert-pictures">
+              <button type="button" class="cert-picture" data-lightbox-title="Learn Python for Data Science Skill Path" aria-label="View the Learn Python for Data Science certificate larger">
+                <img src="assets/certificates/python-data-science.png" width="784" height="620" loading="lazy" alt="Codecademy certificate of completion for the Learn Python for Data Science Skill Path">
+              </button>
+            </div>
+            <div class="cert-footer">
+              <div>
+                <h4>Learn Python for Data Science Skill Path</h4>
+                <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg>Issued 2026</p>
+              </div>
+              <a class="pill-link" href="https://www.codecademy.com/profiles/text0325631589/certificates/ac83e31a3e114189849dd4ee714834eb" target="_blank" rel="noopener">Show credential<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-external"/></svg><span class="visually-hidden"> for Learn Python for Data Science (opens in a new tab)</span></a>
+            </div>
+          </li>
+
+          <li class="cert-card glass">
+            <div class="cert-pictures">
+              <button type="button" class="cert-picture" data-lightbox-title="Learn HTML Course" aria-label="View the Learn HTML certificate larger">
+                <img src="assets/certificates/learn-html.png" width="877" height="685" loading="lazy" alt="Codecademy certificate of completion for the Learn HTML Course">
+              </button>
+            </div>
+            <div class="cert-footer">
+              <div>
+                <h4>Learn HTML Course</h4>
+                <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg>Issued 2024</p>
+              </div>
+              <a class="pill-link" href="https://www.codecademy.com/profiles/text0325631589/certificates/9eb0741e5ebef1f9f58a53bfac67d3a7" target="_blank" rel="noopener">Show credential<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-external"/></svg><span class="visually-hidden"> for Learn HTML Course (opens in a new tab)</span></a>
+            </div>
+          </li>
+        </ul>
+
+        <div class="group-head">
+          <span class="tile tile-round"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-user"/></svg></span>
+          <div>
+            <h3>Reference</h3>
+            <span class="accent-bar" aria-hidden="true"></span>
+          </div>
+        </div>
+        <div class="reference-card glass">
+          <div>
+            <h4>Yeo Sze Wee</h4>
+            <p>Associate Lecturer, Singapore Institute of Management</p>
+          </div>
+          <a class="pill-link" href="mailto:swyeo003@mymail.sim.edu.sg"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-mail"/></svg>swyeo003@mymail.sim.edu.sg</a>
         </div>
       </div>
     </section>
 
+    <div class="divider divider-label" aria-hidden="true">
+      <span class="divider-line"></span>
+      <span class="divider-pill"><svg class="icon" focusable="false"><use href="#i-flag"/></svg>More milestones ahead</span>
+      <span class="divider-line divider-line-end"></span>
+    </div>
+
     <!-- Contact -->
-    <section class="section" id="contact" aria-labelledby="contact-title">
-      <div class="container contact-grid">
+    <section class="section band contact" id="contact" aria-labelledby="contact-title">
+      <svg class="wave wave-top" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0,70 C180,20 360,20 540,60 C760,110 980,100 1200,50 C1300,28 1380,30 1440,45 L1440,120 L0,120 Z"/></svg>
+
+      <div class="page-w contact-grid">
         <div class="contact-info">
-          <p class="section-kicker">Let's connect</p>
-          <h2 class="section-title" id="contact-title">Let's build something together</h2>
+          <p class="eyebrow">Let's connect</p>
+          <h2 class="section-title" id="contact-title">Let's build something together<svg class="icon title-heart" aria-hidden="true" focusable="false"><use href="#i-heart"/></svg></h2>
           <p>Open to internships and software engineering opportunities in Singapore and beyond. The quickest way to reach me is by email. I usually reply within a day.</p>
 
           <ul class="contact-links">
             <li>
               <a href="mailto:saunghpdev@gmail.com">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+                <span class="link-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-mail"/></svg></span>
                 saunghpdev@gmail.com
               </a>
             </li>
             <li>
+              <a href="tel:+6589014177">
+                <span class="link-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></span>
+                +65 8901 4177
+              </a>
+            </li>
+            <li>
               <a href="https://linkedin.com/in/saunghninnphyu" target="_blank" rel="noopener">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg>
-                LinkedIn: saunghninnphyu<span class="visually-hidden"> (opens in a new tab)</span>
+                <span class="link-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-linkedin"/></svg></span>
+                linkedin.com/in/saunghninnphyu<span class="visually-hidden"> (opens in a new tab)</span>
               </a>
             </li>
             <li>
               <a href="https://github.com/saunghp" target="_blank" rel="noopener">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 19c-4 1.5-4-2-6-2.5M15 21v-3.5a3 3 0 0 0-.8-2.3c2.8-.3 5.8-1.4 5.8-6.2a4.8 4.8 0 0 0-1.3-3.3 4.5 4.5 0 0 0-.1-3.3s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 1.8 5.4 2.1 5.4 2.1a4.5 4.5 0 0 0-.1 3.3A4.8 4.8 0 0 0 4 8.8c0 4.8 3 5.9 5.8 6.2a3 3 0 0 0-.8 2.3V21"/></svg>
-                GitHub: saunghp<span class="visually-hidden"> (opens in a new tab)</span>
-              </a>
-            </li>
-            <li>
-              <a href="assets/SaungHninnPhyu-CV.pdf" download>
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
-                Download my CV
+                <span class="link-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-github"/></svg></span>
+                github.com/saunghp<span class="visually-hidden"> (opens in a new tab)</span>
               </a>
             </li>
           </ul>
         </div>
 
-        <form class="card contact-form" id="contact-form" novalidate>
+        <form class="glass contact-form" id="contact-form" novalidate>
           <input type="hidden" name="access_key" value="f6a2d2ac-c41d-476d-b840-e46e63442a28">
-          <h3>Send a message</h3>
-
-          <div class="form-field">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" autocomplete="name" required minlength="2" aria-describedby="name-error">
-            <p class="field-error" id="name-error"></p>
-          </div>
-
-          <div class="form-field">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" autocomplete="email" required aria-describedby="email-error">
-            <p class="field-error" id="email-error"></p>
-          </div>
-
-          <div class="form-field">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" rows="6" required minlength="20" aria-describedby="message-hint message-count message-error"></textarea>
-            <div class="field-meta">
-              <p class="field-hint" id="message-hint">Between 20 and 500 characters.</p>
-              <p class="char-count" id="message-count">0 / 500</p>
+          <div class="form-head">
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-send"/></svg>
+            <div>
+              <h3>Have a role or a project in mind?</h3>
+              <p>I'd love to hear about it! Whether it's an internship, a project, or a software engineering opportunity, feel free to send me a message.</p>
             </div>
-            <p class="field-error" id="message-error"></p>
           </div>
 
-          <button class="button button-primary" type="submit">Submit message</button>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="name">Name</label>
+              <div class="input-wrap">
+                <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-user"/></svg>
+                <input type="text" id="name" name="name" autocomplete="name" required minlength="2" placeholder="Your name" aria-describedby="name-error">
+              </div>
+              <p class="field-error" id="name-error"></p>
+            </div>
+
+            <div class="form-field">
+              <label for="email">Email</label>
+              <div class="input-wrap">
+                <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-mail"/></svg>
+                <input type="email" id="email" name="email" autocomplete="email" required placeholder="Your email" aria-describedby="email-error">
+              </div>
+              <p class="field-error" id="email-error"></p>
+            </div>
+
+            <div class="form-field form-field-wide">
+              <label for="message">Message</label>
+              <div class="input-wrap input-wrap-area">
+                <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chat"/></svg>
+                <textarea id="message" name="message" rows="5" required minlength="20" placeholder="Your message" aria-describedby="message-hint message-count message-error"></textarea>
+              </div>
+              <div class="field-meta">
+                <p class="field-hint" id="message-hint">Between 20 and 500 characters.</p>
+                <p class="char-count" id="message-count">0 / 500</p>
+              </div>
+              <p class="field-error" id="message-error"></p>
+            </div>
+          </div>
+
+          <button class="button button-primary button-block" type="submit">
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-send"/></svg>
+            <span class="submit-label">Send a message</span>
+          </button>
           <p class="form-status" id="form-status" role="status"></p>
         </form>
       </div>
@@ -357,7 +586,7 @@
   </main>
 
   <footer class="site-footer">
-    <div class="container footer-inner">
+    <div class="page-w footer-pill glass">
       <p>&copy; <span id="year">2026</span> Saung Hninn Phyu. Built with HTML, CSS and JavaScript.</p>
       <ul class="footer-links">
         <li><a href="https://github.com/saunghp" target="_blank" rel="noopener">GitHub<span class="visually-hidden"> (opens in a new tab)</span></a></li>
@@ -367,5 +596,34 @@
       </ul>
     </div>
   </footer>
+
+  <!-- Project details: filled in by js/main.js. A native <dialog> gives Escape-to-close, a focus trap and focus return -->
+  <dialog class="dialog" id="project-dialog" aria-labelledby="project-dialog-title">
+    <div class="dialog-panel stack-card">
+      <button type="button" class="dialog-close" data-close-dialog aria-label="Close project details">
+        <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-close"/></svg>
+      </button>
+      <div class="dialog-body" id="project-dialog-body"></div>
+    </div>
+  </dialog>
+
+  <!-- Certificate viewer with previous / next buttons -->
+  <dialog class="dialog lightbox" id="lightbox" aria-labelledby="lightbox-caption">
+    <div class="lightbox-panel">
+      <button type="button" class="lightbox-button lightbox-close" data-close-dialog aria-label="Close certificate viewer">
+        <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-close"/></svg>
+      </button>
+      <div class="lightbox-stage">
+        <button type="button" class="lightbox-button lightbox-prev" id="lightbox-prev" aria-label="Previous certificate">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevron-left"/></svg>
+        </button>
+        <img id="lightbox-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="">
+        <button type="button" class="lightbox-button lightbox-next" id="lightbox-next" aria-label="Next certificate">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevron-right"/></svg>
+        </button>
+      </div>
+      <p class="lightbox-caption" id="lightbox-caption"></p>
+    </div>
+  </dialog>
 </body>
 </html>
