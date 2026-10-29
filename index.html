@@ -9,7 +9,17 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Caveat:wght@600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Fonts: only the weights the page uses. The links load as "preload" and become stylesheets once
+       fetched, so they never block the first paint. The script font only needs the letters of "Hello, I'm". -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap&text=Hello%2C%20I%27m" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap&text=Hello%2C%20I%27m">
+  </noscript>
+
+  <!-- The hero picture is the largest thing on the page: start fetching it straight away -->
+  <link rel="preload" as="image" href="assets/images/saung.webp" type="image/webp" fetchpriority="high">
 
   <link rel="stylesheet" href="css/style.css">
   <!-- Applies the saved theme before the page paints, so dark mode does not flash light on reload -->
@@ -120,7 +130,10 @@
         </div>
 
         <figure class="hero-figure">
-          <img src="assets/images/saung.png" width="560" height="755" alt="Illustration of Saung smiling while working on a laptop">
+          <picture>
+            <source srcset="assets/images/saung.webp" type="image/webp">
+            <img src="assets/images/saung.png" width="560" height="755" fetchpriority="high" decoding="async" alt="Illustration of Saung smiling while working on a laptop">
+          </picture>
           <!-- <ul class="hero-chips" aria-hidden="true">
             <li class="chip chip-1"><svg class="icon" focusable="false"><use href="#i-react"/></svg>React</li>
             <li class="chip chip-2"><svg class="icon" focusable="false"><use href="#i-triangle"/></svg>Next.js</li>
@@ -351,7 +364,7 @@
                 <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg>Singapore</p>
               </div>
               <a class="logo-plate" href="https://www.uow.edu.au/" target="_blank" rel="noopener" aria-label="Visit University of Wollongong (opens in a new tab)">
-                <img src="assets/logos/uow.svg" width="240" height="64" alt="University of Wollongong Australia logo">
+                <img src="assets/logos/uow.svg" width="240" height="64" loading="lazy" alt="University of Wollongong Australia logo">
               </a>
             </div>
           </li>
@@ -365,7 +378,7 @@
                 <p class="meta-line"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg>Singapore</p>
               </div>
               <a class="logo-plate" href="https://www.sim.edu.sg/" target="_blank" rel="noopener" aria-label="Visit Singapore Institute of Management (opens in a new tab)">
-                <img src="assets/logos/sim.svg" width="240" height="64" alt="Singapore Institute of Management logo">
+                <img src="assets/logos/sim.svg" width="240" height="64" loading="lazy" alt="Singapore Institute of Management logo">
               </a>
             </div>
           </li>
@@ -396,11 +409,11 @@
 
           <li class="cert-card glass">
             <div class="cert-pictures cert-pictures-pair">
-              <button type="button" class="cert-picture" data-lightbox-title="SIMITC Hackexperience 2026" aria-label="View the Community Choice award certificate larger">
-                <img src="assets/certificates/community-choice-award.jpg" width="1000" height="563" loading="lazy" alt="Certificate of Excellence for the Community Choice Award at SIMITC Hackexperience 2026">
+              <button type="button" class="cert-picture" data-lightbox-title="SIMITC Hackexperience 2026" data-full="assets/certificates/community-choice-award.jpg" aria-label="View the Community Choice award certificate larger">
+                <img src="assets/certificates/community-choice-award-thumb.webp" width="640" height="452" loading="lazy" decoding="async" alt="Certificate of Excellence for the Community Choice Award at SIMITC Hackexperience 2026">
               </button>
-              <button type="button" class="cert-picture" data-lightbox-title="SIMITC Hackexperience 2026" aria-label="View the Best Use of Microsoft Stack certificate larger">
-                <img src="assets/certificates/microsoft-stack-award.jpg" width="1000" height="563" loading="lazy" alt="Certificate of Excellence for Best Use of Microsoft Stack at SIMITC Hackexperience 2026">
+              <button type="button" class="cert-picture" data-lightbox-title="SIMITC Hackexperience 2026" data-full="assets/certificates/microsoft-stack-award.jpg" aria-label="View the Best Use of Microsoft Stack certificate larger">
+                <img src="assets/certificates/microsoft-stack-award-thumb.webp" width="640" height="452" loading="lazy" decoding="async" alt="Certificate of Excellence for Best Use of Microsoft Stack at SIMITC Hackexperience 2026">
               </button>
             </div>
             <div class="cert-footer">
@@ -414,8 +427,8 @@
 
           <li class="cert-card glass">
             <div class="cert-pictures">
-              <button type="button" class="cert-picture" data-lightbox-title="AgentCamp 2026 - Global AI Singapore" aria-label="View the AgentCamp 2026 badge larger">
-                <img src="https://globalai.community/img/badge/shared/20816dad92dfeda067d8f3cd6f216942100cde77391a52773187c9e2a404f2b8.png?w=1920&amp;h=1080&amp;mode=pad" width="1920" height="1080" loading="lazy" alt="AgentCamp 2026 attendee badge from the Global AI Community">
+              <button type="button" class="cert-picture" data-lightbox-title="AgentCamp 2026 - Global AI Singapore" data-full="https://globalai.community/img/badge/shared/20816dad92dfeda067d8f3cd6f216942100cde77391a52773187c9e2a404f2b8.png?w=1920&amp;h=1080&amp;mode=pad" aria-label="View the AgentCamp 2026 badge larger">
+                <img src="https://globalai.community/img/badge/shared/20816dad92dfeda067d8f3cd6f216942100cde77391a52773187c9e2a404f2b8.png?w=640&amp;h=360&amp;mode=pad" width="640" height="360" loading="lazy" decoding="async" alt="AgentCamp 2026 attendee badge from the Global AI Community">
               </button>
             </div>
             <div class="cert-footer">

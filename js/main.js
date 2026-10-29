@@ -561,6 +561,7 @@ function createProjectCard(project) {
     image.width = 800;
     image.height = 500;
     image.loading = 'lazy';
+    image.decoding = 'async';
     media.append(image);
     card.append(media);
   } else if (project.visual) {
@@ -779,7 +780,8 @@ function initCertificateViewer() {
     const group = Array.from(pictureButton.closest('.cert-pictures').querySelectorAll('.cert-picture'));
     items = group.map(function (button) {
       const thumb = button.querySelector('img');
-      return { src: thumb.currentSrc || thumb.src, alt: thumb.alt, title: button.dataset.lightboxTitle };
+      // data-full holds the full-size file; the card itself only loads a small thumbnail
+      return { src: button.dataset.full || thumb.currentSrc || thumb.src, alt: thumb.alt, title: button.dataset.lightboxTitle };
     });
     prevButton.hidden = items.length < 2;
     nextButton.hidden = items.length < 2;
