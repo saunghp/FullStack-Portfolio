@@ -133,7 +133,7 @@ Scores vary a little from run to run and depend on the machine and hosting. The 
 - Commits were made at each milestone: HTML structure, styles, the menu/theme/form JavaScript, project cards and filters, and the README.
 - Project cards and filters were built on `feature/project-filters`, reviewed and merged into `main` through [pull request #1](https://github.com/saunghp/FullStack-Portfolio/pull/1).
 - The working contact form was built on `feature/contact-form` and merged through [pull request #2](https://github.com/saunghp/FullStack-Portfolio/pull/2).
-- The redesign (new look, project details dialog, certificate viewer and performance work) lives on `feature/match-react-design`.
+- The redesign (new look, project details dialog, certificate viewer and performance work) is built on its own feature branch and merged into `main` through a pull request.
 
 ## Known limitations
 
