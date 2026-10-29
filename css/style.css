@@ -1,8 +1,7 @@
 /* ==========================================================================
    Saung Hninn Phyu - Portfolio styles
    Mobile-first: base rules target phones, media queries add tablet/desktop.
-   The look follows my React portfolio (glass cards, wavy colour bands, blue
-   accent), rebuilt here with plain CSS only.
+   Glass cards, wavy colour bands and a blue accent, in plain CSS only.
    ========================================================================== */
 
 /* ---------- Design tokens ---------- */
