@@ -126,7 +126,7 @@ What changed:
 - **Painting:** the blur behind cards was removed because it is invisible on a flat background; only the floating navigation keeps it.
 - **Contrast:** the faint skill numbers were darkened, which took Accessibility to 100.
 
-Scores vary a little from run to run and depend on the machine and hosting. The step-by-step explanation is in [EXPLANATION.md](EXPLANATION.md#8-performance-lighthouse-78-to-98).
+Scores vary a little from run to run and depend on the machine and hosting.
 
 ## Git workflow
 
