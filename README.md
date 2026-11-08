@@ -1,4 +1,4 @@
-# Saung Hninn Phyu – Portfolio
+# Saung Hninn Phyu - Portfolio
 
 A one-page personal portfolio built with plain **HTML, CSS and vanilla JavaScript**: no frameworks, libraries, build step or backend of my own. It introduces me, lists the skills I'm using and learning, shows my projects with category filters and a details dialog, and lets visitors message me through a working contact form.
 
